@@ -460,6 +460,13 @@ body {
   animation: scrollPulse 2s ease infinite;
 }
 
+/* Prevent the hero scroll indicator from overlapping fixed UI on small screens */
+@media (max-width: 640px) {
+  .hero-scroll {
+    display: none;
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -696,6 +703,53 @@ body {
   border-left-color: var(--accent-hover);
   transform: translateY(-2px);
 }
+
+/* Reveal animation specifically for skill pillars */
+.skill-pillar.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.skill-pillar.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Click 'flow' animation: short scale/raise with subtle glow */
+.skill-pillar.flow {
+  animation: flowPulse 560ms ease forwards;
+}
+@keyframes flowPulse {
+  0% { transform: translateY(0) scale(1); box-shadow: var(--pillar-hover-shadow); }
+  40% { transform: translateY(-8px) scale(1.03); }
+  100% { transform: translateY(0) scale(1); box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
+}
+
+/* Bug overlay shown when clicking Skills & Expertise */
+.bug-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 120;
+}
+.bug-overlay img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: clamp(48px, 12vw, 140px);
+  height: auto;
+  opacity: 0;
+  transition: opacity 240ms ease, transform 240ms ease;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.18));
+}
+.bug-overlay.show img {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Ensure skills section is positioned relatively for overlay positioning */
+.skills { position: relative; }
 .skill-pillar[data-category="api"] { border-left-color: #0ea5e9; }
 .skill-pillar[data-category="genai"] { border-left-color: #8b5cf6; }
 .skill-pillar[data-category="mobile"] { border-left-color: #10b981; }
@@ -999,6 +1053,8 @@ a.contact-item:hover {
   .nav-links { display: none; }
   .btn-nav { display: none; }
   .nav-toggle { display: flex; }
+  /* ensure theme toggle remains visible and sits above the hamburger */
+  .theme-toggle { display: flex; right: 3.5rem; z-index: 200; }
   .header.nav-open .nav-links {
     display: flex;
     position: fixed;
@@ -1028,6 +1084,8 @@ a.contact-item:hover {
   }
   .theme-toggle {
     top: 0.75rem;
-    right: 0.75rem;
+    right: 3.5rem;
+    display: flex;
+    z-index: 200;
   }
 }

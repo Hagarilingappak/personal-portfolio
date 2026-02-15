@@ -40,6 +40,23 @@
     }, { passive: true });
   }
 
+  // Hide hero scroll indicator on small screens or when user scrolls down
+  const heroScroll = document.querySelector('.hero-scroll');
+  function updateHeroScroll() {
+    if (!heroScroll) return;
+    const isSmall = window.innerWidth <= 640;
+    const scrolled = window.scrollY > 20;
+    if (isSmall || scrolled) {
+      heroScroll.style.display = 'none';
+    } else {
+      heroScroll.style.display = 'flex';
+    }
+  }
+  // run on load and on scroll/resize
+  updateHeroScroll();
+  window.addEventListener('scroll', updateHeroScroll, { passive: true });
+  window.addEventListener('resize', updateHeroScroll);
+
   // Mobile nav toggle
   const navToggle = document.querySelector('.nav-toggle');
   if (navToggle) {
@@ -70,10 +87,8 @@
     });
   });
 
-  // Section reveal on scroll
-  const revealEls = document.querySelectorAll(
-    '.section-label, .section-title, .about-grid, .timeline-item, .skills-pillars, .services-carousel, .cert-card, .contact-grid, .hero-content, .hero-visual'
-  );
+  // Section reveal on scroll — only apply to Skills/Technical Depth pillars
+  const revealEls = document.querySelectorAll('.skills-pillars .skill-pillar');
 
   const observerOptions = {
     root: null,
@@ -95,6 +110,27 @@
   revealEls.forEach(function (el) {
     el.classList.add('reveal');
     observer.observe(el);
+    // Add click 'flow' animation (short visual feedback)
+    el.addEventListener('click', function (ev) {
+      el.classList.add('flow');
+      // show bug overlay in the Skills section positioned over the clicked widget
+      const skillsSection = document.querySelector('.skills');
+      const overlay = skillsSection ? skillsSection.querySelector('.bug-overlay') : null;
+      if (overlay) {
+        const img = overlay.querySelector('img');
+        const skillsRect = skillsSection.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        // center of clicked element relative to skills container
+        const cx = elRect.left - skillsRect.left + elRect.width / 2;
+        const cy = elRect.top - skillsRect.top + elRect.height / 2;
+        // place the image at the computed coordinates (image uses translate(-50%,-50%))
+        img.style.left = cx + 'px';
+        img.style.top = cy + 'px';
+        overlay.classList.add('show');
+        setTimeout(function () { overlay.classList.remove('show'); }, 900);
+      }
+      setTimeout(function () { el.classList.remove('flow'); }, 600);
+    });
   });
 
   // Hero elements already visible (no delay for first view)
